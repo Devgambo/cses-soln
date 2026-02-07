@@ -40,12 +40,53 @@ int main() {
     fast_io();
     cin >> n >> m;
     vector<vpll> g(n+1);
+    
     for(int i=0; i<m; i++){
-        ll a,b;
-        ll c;
+        ll a,b,c;
         cin >> a >> b >> c;
         g[a].pb({b,c});
     }
+
+    // Dijkstra with 4 arrays
+    vll dist(n+1, LINF);
+    vll ways(n+1, 0);
+    vi minEdges(n+1, 0);
+    vi maxEdges(n+1, 0);
     
+    priority_queue<pll, vpll, greater<pll>> pq;
+    
+    dist[1] = 0;
+    ways[1] = 1;
+    minEdges[1] = 0;
+    maxEdges[1] = 0;
+    pq.push({0, 1});
+    
+    while(!pq.empty()){
+        auto [d, u] = pq.top();
+        pq.pop();
+        
+        if(d > dist[u]) continue;
+        
+        for(auto [v, w] : g[u]){
+            ll newDist = dist[u] + w;
+            
+            if(newDist < dist[v]){
+                // Found shorter path
+                dist[v] = newDist;
+                ways[v] = ways[u];
+                minEdges[v] = minEdges[u] + 1;
+                maxEdges[v] = maxEdges[u] + 1;
+                pq.push({newDist, v});
+            }
+            else if(newDist == dist[v]){
+                // Found another path with same distance
+                ways[v] = (ways[v] + ways[u]) % MOD;
+                minEdges[v] = min(minEdges[v], minEdges[u] + 1);
+                maxEdges[v] = max(maxEdges[v], maxEdges[u] + 1);
+            }
+        }
+    }
+    
+    cout << dist[n] << " " << ways[n] << " " << minEdges[n] << " " << maxEdges[n] << "\n";
     return 0;
 }

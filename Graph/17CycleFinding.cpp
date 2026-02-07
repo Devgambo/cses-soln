@@ -49,17 +49,18 @@ int main() {
         g.pb({a,b,c});
     }
 
-    vll dist(n+1,1e18);
+
+    //we'hv init all the nodes as 0 so we can treat all the nodes as origin and 
+    //not only 1 since there are cycles which are unreachable from 1.
+
+    vll dist(n+1,0);
     vi par(n+1,-1);
-    dist[1] = 0;
     
     for(int i=0 ; i<n-1 ; i++){
         for(auto [a,b,c] : g){
-            if(dist[a]!=1e18){
-                if(dist[a] + c < dist[b]){
-                    dist[b] = dist[a] + c;
-                    par[b] = a;
-                }
+            if(dist[a] + c < dist[b]){
+                dist[b] = dist[a] + c;
+                par[b] = a;
             }
         }
     }
@@ -68,12 +69,10 @@ int main() {
     //check for negative cycle and find a node in it
     int cycNode = -1;
     for(auto [a,b,c] : g){
-        if(dist[a]!=1e18){
-            if(dist[a] + c < dist[b]){
-                cycNode = b;
-                par[b] = a;
-                break;
-            }
+        if(dist[a] + c < dist[b]){
+            cycNode = b;
+            par[b] = a;
+            break;
         }
     }
 
@@ -81,6 +80,11 @@ int main() {
     if(cycNode == -1){
         cout << "NO\n";
     }else{ 
+        // Move back n steps to ensure we're actually in the cycle
+        for(int i = 0; i < n; i++){
+            cycNode = par[cycNode];
+        }
+        
         cout <<"YES"<<'\n';
         vi cycle;
         int curr = cycNode;
