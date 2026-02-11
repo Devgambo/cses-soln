@@ -28,51 +28,51 @@ const ld PI = acos(-1.0);
 
 #define debug(x) cerr << #x << " = " << (x) << endl
 
-void fast_io() {
+void fast_io()
+{
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.tie(nullptr);
 }
 
-
-int main() {
+int main()
+{
     fast_io();
     int t;
     cin >> t;
-    while(t--){
-        int n;  cin >> n;
+    while (t--)
+    {
+        int n;
+        cin >> n;
         vll a(n);
-        pair<ll,int> mini = {1e18,0};
-        pair<ll,int> maxi = {-1e18,0};
-        for(int i=0; i<n; i++){
-            ll x;
-            cin >> x;
-            a[i] = x;
-            if(mini.ff > x){
-                mini = {x,i};
-            }
-            if(maxi.ff <= x){
-                maxi = {x,i};
-            }
+        ll mini = 1e18, maxi = 0;
+        int issorted = 1;
+        for (int i = 0; i < n; i++)
+        {
+            cin >> a[i];
+            if (i > 0 && a[i] < a[i - 1])
+                issorted = 0;
+            mini = min(mini, a[i]);
+            maxi = max(maxi, a[i]);
         }
+        if (issorted)
+        {
+            cout << -1 << '\n';
+            continue;
+        }
+
         ll ans = 1e18;
-        // for(int i = mini.ss; i<n; i++){
-        //     if(a[i] == mini.ff) continue;
-        //     ans = min(ans, abs(a[i] - mini.ff));
-        // }
-        // for(int i = 0; i<=maxi.ss; i++){
-        //     if(a[i] == maxi.ff) continue;
-        //     ans = min(ans, abs(a[i] - maxi.ff));
-        // }
-        for(int i = maxi.ss; i<n; i++){
-            if(a[i] == maxi.ff) continue;
-            ans = min(ans, abs(a[i] - maxi.ff));
+        vll b = a;
+        sort(all(a));
+        for (int i = 0; i < n; i++)
+        {
+            if (a[i] != b[i])
+            {
+                ll cur = max(a[i] - mini, maxi - a[i]);
+                ans = min(ans, cur);
+            }
         }
-        if(ans == 1e18){
-            cout << -1;
-        }else{
-            cout << ans;
-        }
+        cout << ans;
         cout << '\n';
     }
     return 0;

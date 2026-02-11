@@ -34,20 +34,53 @@ void fast_io() {
     cout.tie(nullptr);
 }
 
+
+void dfs(int nd, const vvi &g, vi &vis){
+    vis[nd] =1;
+    for(int i:g[nd]){
+        if(!vis[i]){
+            dfs(i,g,vis);
+        }
+    }
+}
+
 int n, m;
 int main() {
     fast_io();
     cin >> n >> m;
     vvi g(n+1);
+    vvi revg(n+1);
     for(int i=0; i<m; i++){
         int a,b;
         cin >> a >> b;
-        g[a].pb(b);
+        g[a].pb(b); 
+        revg[b].pb(a); 
     }
 
+    // Check 1: Can we reach all cities from city 1? (forward)
+    vi vis1(n+1, 0);
+    dfs(1, g, vis1);
+    for(int i = 1; i <= n; i++){
+        if(!vis1[i]){
+            cout << "NO" << '\n';
+            cout << 1 << " " << i;  // Can't go from 1 to i
+            return 0;
+        }
+    }
     
+    // Check 2: Can we reach city 1 from all cities? (reverse)
+    vi vis2(n+1, 0);
+    dfs(1, revg, vis2);
+    for(int i = 1; i <= n; i++){
+        if(!vis2[i]){
+            cout << "NO" << '\n';
+            cout << i << " " << 1;  // Can't go from i to 1
+            return 0;
+        }
+    }
 
-    cout << '\n';
+    cout << "YES" << '\n';
+
 
     return 0;
 }
